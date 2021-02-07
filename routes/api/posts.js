@@ -51,11 +51,7 @@ router.patch('/update/:id', passport.authenticate('jwt', { session: false }), (r
 
   const { title, body } = req.body
 
-  Post.findOneAndUpdate(
-    { author, _id: req.params.id },
-    { $set: { title, body } },
-    { upsert: true, returnNewDocument: true }
-  )
+  Post.findOneAndUpdate({ author, _id: req.params.id }, { $set: { title, body } }, { new: true })
     .then((doc) => res.status(200).json(doc))
     .catch((err) => res.status(400).json({ update: 'Error updating existing post' }))
 })

@@ -1,0 +1,45 @@
+@import "../../../sass/styles.scss";
+
+// ############ List Post #####################
+
+.grid-container {
+   display: grid;
+   grid-template-columns: repeat(auto-fit, minmax(260px, 400px));
+   grid-gap: 1em;
+}
+
+a:link {
+   text-decoration: none !important;
+}
+
+.deckStyle {
+   box-shadow: $cardShadowInitial;
+}
+
+.deckStyle:hover {
+   transition: 0.4s;
+   box-shadow: $cardShadowHover;
+}
+
+// ######### Post ############
+
+.postCover {
+   background: $themeColor;
+   color: $light;
+}
+
+// ############# ViewPost ##############
+
+.viewPost {
+   overflow-wrap: break-word;
+}
+
+.postTitle {
+   color: $primaryColor;
+}
+
+.footerStyle {
+   color: $subtitleColor;
+}
+
+// #################################
