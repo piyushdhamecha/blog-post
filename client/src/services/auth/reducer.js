@@ -12,7 +12,7 @@ export default (state = initialState, action) => {
     case SET_CURRENT_USER:
       return {
         ...state,
-        isAuthenticated: _.isEmpty(action.payload),
+        isAuthenticated: !_.isEmpty(action.payload),
         user: action.payload,
       }
     case TOGGLE_USER_LOADING:

@@ -32,6 +32,7 @@ const LoginPage = ({ loginUser, auth, errors, history, clearErrors }) => {
     if (auth.isAuthenticated) {
       history.push("/blog")
     }
+    
     setUser((newUser) => ({ ...newUser, errors }))
   }, [auth, errors, history])
 
@@ -45,12 +46,15 @@ const LoginPage = ({ loginUser, auth, errors, history, clearErrors }) => {
   const handleBlur = (e) => {
     const { name, value } = e.target
     const error = { ...user.errors, ...Validate(name, value).errors }
+
     setUser({ ...user, errors: { ...error } })
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
+
     const { email, password } = user
+
     loginUser({ email, password })
   }
 

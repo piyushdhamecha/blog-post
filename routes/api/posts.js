@@ -5,7 +5,7 @@ const passport = require('passport')
 const validatePostInput = require('../../validation/post')
 
 router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Post.find({ author: req.user.user_name })
+  Post.find({})
     .then((posts) => res.status(200).json(posts))
     .catch((err) => res.status(400).json({ user: 'Error fetching posts of logged in user' }))
 })

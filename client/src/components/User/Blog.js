@@ -5,7 +5,7 @@ import { Nav, Button, Container, Form } from "react-bootstrap"
 import ListPost from "../Posts/ListPost"
 import "./blog.scss"
 
-const Blog = ({ posts, auth }) => {
+const Blog = ({ posts, auth, onPostItemClick }) => {
   const inputRef = useRef(null)
   const [search, setSearch] = useState("")
   const [display, setDisplay] = useState(false)
@@ -50,6 +50,7 @@ const Blog = ({ posts, auth }) => {
           posts={posts.filter((post) =>
             post.title.toLowerCase().includes(search)
           )}
+          onPostItemClick={onPostItemClick}
         />
       ) : (
         display && (

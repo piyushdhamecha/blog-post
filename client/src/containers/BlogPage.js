@@ -6,6 +6,8 @@ import {
   getPosts as getPostsAction,
   getPostsByAuthor as getPostsByAuthorAction,
 } from "../services/posts/actions"
+import {modalTypes} from '../components/Modal/constants'
+import {showModal as showModalAction} from '../services/modal/actions'
 
 const BlogPage = ({
   isAuthenticated,
@@ -13,6 +15,7 @@ const BlogPage = ({
   getPosts,
   match,
   posts,
+  showModal,
 }) => {
   useEffect(() => {
     if (isAuthenticated) {
@@ -22,7 +25,11 @@ const BlogPage = ({
     }
   }, [isAuthenticated, getPosts, getPostsByAuthor, match])
 
-  return <Blog posts={posts} auth={isAuthenticated} />
+  const handlePostItemClick = (postId) => {
+    showModal({ postId, modalType: modalTypes.POST_PREVIEW })
+  }
+
+  return <Blog posts={posts} auth={isAuthenticated} onPostItemClick={handlePostItemClick} />
 }
 
 const mapStateToProps = (state) => ({
@@ -30,7 +37,10 @@ const mapStateToProps = (state) => ({
   posts: state.post.posts,
 })
 
-export default connect(mapStateToProps, {
+const mapDispatchToProps = {
   getPostsByAuthor: getPostsByAuthorAction,
   getPosts: getPostsAction,
-})(BlogPage)
+  showModal: showModalAction
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(BlogPage)

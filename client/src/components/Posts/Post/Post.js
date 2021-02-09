@@ -4,11 +4,15 @@ import Card from "react-bootstrap/Card"
 import { getFormattedDate } from "../../../utils/date"
 import "./post.scss"
 
-const Post = ({ post }) => {
+const Post = ({ post, onClick }) => {
   const postDate = getFormattedDate(post.date)
 
   return (
-    <Card className="deckStyle" style={{ border: "none" }}>
+    <Card 
+      className="deckStyle" 
+      style={{ border: "none", cursor: 'pointer' }}
+      onClick={onClick}
+    >
       <Card.Body className="postCover">
         <Card.Title className="text-center p-5">{post.title}</Card.Title>
       </Card.Body>

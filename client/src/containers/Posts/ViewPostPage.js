@@ -28,6 +28,7 @@ const ViewPostPage = ({
   }
 
   if (Object.keys(post).length === 0) return <div />
+  
   return (
     <ViewPost
       post={post}

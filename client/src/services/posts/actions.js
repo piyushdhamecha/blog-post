@@ -107,7 +107,7 @@ export const updatePost = (id, postData, history) => (dispatch) => {
         payload: res.data,
       })
       dispatch(togglePostLoading())
-      history.push(`/blog/post/${res.data._id}`)
+      history.push("/blog")
     })
     .catch((err) => {
       dispatch(setErrors(err.response.data))
