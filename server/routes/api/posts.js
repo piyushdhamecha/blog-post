@@ -5,9 +5,28 @@ const passport = require('passport')
 const validatePostInput = require('../../validation/post')
 
 router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Post.find({})
-    .then((posts) => res.status(200).json(posts))
-    .catch((err) => res.status(400).json({ user: 'Error fetching posts of logged in user' }))
+  const { limit = 20, page = 1 } = req.query
+
+  const skip = (+page - 1) * +limit
+  const query = {}
+
+  Post.find(query)
+    .limit(+limit)
+    .skip(skip)
+    .exec(async (err, posts) => {
+      if (err) {
+        return res.status(400).json(err)
+      }
+
+      const totalRecords = await Post.countDocuments(query)
+
+      res.status(200).json({
+        meta: {
+          totalRecords: totalRecords,
+        },
+        data: posts,
+      })
+    })
 })
 
 router.get('/post/:id', (req, res) => {
@@ -53,7 +72,23 @@ router.patch('/update/:id', passport.authenticate('jwt', { session: false }), (r
 
   Post.findOneAndUpdate({ author, _id: req.params.id }, { $set: { title, body } }, { new: true })
     .then((doc) => res.status(200).json(doc))
-    .catch((err) => res.status(400).json({ update: 'Error updating existing post' }))
+    .catch((err) => res.status(400).json(err))
+})
+
+router.put('/like', passport.authenticate('jwt', { session: false }), (req, res) => {
+  const user = req.user
+
+  Post.findOneAndUpdate({ _id: req.body.id }, { $push: { likes: user._id } }, { new: true })
+    .then((doc) => res.status(200).json(doc))
+    .catch((err) => res.status(400).json(err))
+})
+
+router.put('/unlike', passport.authenticate('jwt', { session: false }), (req, res) => {
+  const user = req.user
+
+  Post.findOneAndUpdate({ _id: req.body.id }, { $pull: { likes: user._id } }, { new: true })
+    .then((doc) => res.status(200).json(doc))
+    .catch((err) => res.status(400).json(err))
 })
 
 router.delete('/delete/:id', passport.authenticate('jwt', { session: false }), (req, res) => {

@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import React, { useEffect } from 'react'
 import ReactBootStrapModal from 'react-bootstrap/Modal'
 import { connect } from 'react-redux'
@@ -5,14 +6,40 @@ import { compose } from 'redux'
 import { withRouter } from 'react-router-dom'
 
 import ViewPost from '../../../components/Posts/ViewPost'
+import Spinner from '../../../components/Layout/Spinner'
 import { deletePost as deletePostAction, getPostByID as getPostByIDAction } from '../../../services/posts/actions'
 
 import { hideModal as hideModalAction } from '../../../services/modal/actions'
 
-const PostPreview = ({ auth, authUsername, post, postId, history, getPostByID, deletePost, hideModal }) => {
+const PostPreview = ({
+  auth,
+  authUsername,
+  post,
+  postId,
+  history,
+  getPostByID,
+  deletePost,
+  hideModal,
+  postLoading,
+}) => {
   useEffect(() => {
     getPostByID(postId)
   }, [postId, getPostByID])
+  if (postLoading) {
+    return (
+      <ReactBootStrapModal.Body>
+        <Spinner />
+      </ReactBootStrapModal.Body>
+    )
+  }
+
+  if (postLoading || _.isEmpty(post)) {
+    return (
+      <ReactBootStrapModal.Body>
+        <Spinner />
+      </ReactBootStrapModal.Body>
+    )
+  }
 
   const handleEdit = () => {
     hideModal()
@@ -23,8 +50,6 @@ const PostPreview = ({ auth, authUsername, post, postId, history, getPostByID, d
     hideModal()
     deletePost(post._id, history)
   }
-
-  if (Object.keys(post).length === 0) return <div />
 
   return (
     <ReactBootStrapModal.Body>
@@ -38,6 +63,7 @@ const mapStateToProps = (state) => ({
   auth: state.auth.isAuthenticated,
   authUsername: state.auth.user.user_name,
   post: state.post.post,
+  postLoading: state.post.postLoading,
 })
 
 const mapDispatchToProps = {

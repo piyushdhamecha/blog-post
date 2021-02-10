@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios from 'axios'
 
 import {
   CREATE_POST,
@@ -9,9 +9,9 @@ import {
   TOGGLE_POSTS_LOADING,
   TOGGLE_POST_LOADING,
   RESET_POST,
-} from "./constants"
+} from './constants'
 
-import { setErrors, clearErrors } from "../errors/actions"
+import { setErrors, clearErrors } from '../errors/actions'
 
 export const togglePostLoading = () => ({
   type: TOGGLE_POST_LOADING,
@@ -25,14 +25,14 @@ export const createPost = (postData, history) => (dispatch) => {
   dispatch(togglePostLoading())
 
   axios
-    .post("/api/posts/create", postData)
+    .post('/api/posts/create', postData)
     .then((res) => {
       dispatch({
         type: CREATE_POST,
         payload: res.data,
       })
       dispatch(togglePostLoading())
-      history.push("/blog")
+      history.push('/blog')
     })
     .catch((err) => {
       dispatch(setErrors(err.response.data))
@@ -77,15 +77,25 @@ export const getPostsByAuthor = (author) => (dispatch) => {
     })
 }
 
-export const getPosts = () => (dispatch) => {
+export const getPosts = (options = {}) => (dispatch) => {
+  const { limit = 20, page = 1 } = options
+
   dispatch(togglePostsLoading())
 
   axios
-    .get(`/api/posts/`)
+    .get(`/api/posts/`, {
+      params: {
+        limit,
+        page,
+      },
+    })
     .then((res) => {
       dispatch({
         type: GET_POSTS,
         payload: res.data,
+        options: {
+          mergeResponse: page !== 1,
+        },
       })
       dispatch(clearErrors())
       dispatch(togglePostsLoading())
@@ -107,7 +117,43 @@ export const updatePost = (id, postData, history) => (dispatch) => {
         payload: res.data,
       })
       dispatch(togglePostLoading())
-      history.push("/blog")
+      history.push('/blog')
+    })
+    .catch((err) => {
+      dispatch(setErrors(err.response.data))
+      dispatch(togglePostLoading())
+    })
+}
+
+export const like = (id) => (dispatch) => {
+  dispatch(togglePostLoading())
+
+  axios
+    .put(`/api/posts/like`, { id })
+    .then((res) => {
+      dispatch({
+        type: UPDATE_POST,
+        payload: res.data,
+      })
+      dispatch(togglePostLoading())
+    })
+    .catch((err) => {
+      dispatch(setErrors(err.response.data))
+      dispatch(togglePostLoading())
+    })
+}
+
+export const unlike = (id) => (dispatch) => {
+  dispatch(togglePostLoading())
+
+  axios
+    .put(`/api/posts/unlike`, { id })
+    .then((res) => {
+      dispatch({
+        type: UPDATE_POST,
+        payload: res.data,
+      })
+      dispatch(togglePostLoading())
     })
     .catch((err) => {
       dispatch(setErrors(err.response.data))
@@ -126,7 +172,7 @@ export const deletePost = (id, history) => (dispatch) => {
         payload: id,
       })
       dispatch(togglePostLoading())
-      history.push("/blog")
+      history.push('/blog')
     })
     .catch((err) => {
       dispatch(setErrors(err.response.data))

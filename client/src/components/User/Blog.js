@@ -1,13 +1,23 @@
-import React, { useState, useRef, useEffect } from "react"
-import { Link } from "react-router-dom"
-import { Nav, Button, Container, Form } from "react-bootstrap"
+import React, { useState, useRef, useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import { Nav, Button, Container, Form } from 'react-bootstrap'
 
-import ListPost from "../Posts/ListPost"
-import "./blog.scss"
+import ListPost from '../Posts/ListPost'
+import './blog.scss'
 
-const Blog = ({ posts, auth, onPostItemClick }) => {
+const Blog = ({
+  posts,
+  auth,
+  hasMore,
+  page,
+  currentUserName,
+  onPageChange,
+  onPostItemClick,
+  onLikeClick,
+  onUnlikeClick,
+}) => {
   const inputRef = useRef(null)
-  const [search, setSearch] = useState("")
+  const [search, setSearch] = useState('')
   const [display, setDisplay] = useState(false)
 
   const handleChange = () => {
@@ -47,18 +57,22 @@ const Blog = ({ posts, auth, onPostItemClick }) => {
       </div>
       {posts.length > 0 ? (
         <ListPost
-          posts={posts.filter((post) =>
-            post.title.toLowerCase().includes(search)
-          )}
+          currentUserName={currentUserName}
+          posts={posts.filter((post) => post.title.toLowerCase().includes(search))}
+          hasMore={hasMore}
+          page={page}
+          onPageChange={onPageChange}
           onPostItemClick={onPostItemClick}
+          onLikeClick={onLikeClick}
+          onUnlikeClick={onUnlikeClick}
         />
       ) : (
         display && (
           <Container
-            style={{ height: "50vh" }}
+            style={{ height: '50vh' }}
             className="d-flex flex-column justify-content-center align-items-center"
           >
-            {" "}
+            {' '}
             <p className="text-secondary h3">No Post Found !</p>
           </Container>
         )

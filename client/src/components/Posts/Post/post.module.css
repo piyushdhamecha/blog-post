@@ -1,0 +1,28 @@
+.footerContainer {
+  padding: 0 !important;
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+
+.commentFooter {
+  display: flex;
+  padding: 6px 20px !important;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.commentFooter > div > * ~ * {
+  padding-left: 5px;
+}
+
+.like {
+  cursor: pointer;
+}
+
+.comments {
+  height: 100px;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

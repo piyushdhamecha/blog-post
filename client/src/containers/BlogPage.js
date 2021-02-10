@@ -1,13 +1,17 @@
-import React, { useEffect } from "react"
-import { connect } from "react-redux"
+import React, { useEffect, useState, useMemo } from 'react'
+import { connect } from 'react-redux'
 
-import Blog from "../components/User/Blog"
+import Blog from '../components/User/Blog'
 import {
   getPosts as getPostsAction,
   getPostsByAuthor as getPostsByAuthorAction,
-} from "../services/posts/actions"
-import {modalTypes} from '../components/Modal/constants'
-import {showModal as showModalAction} from '../services/modal/actions'
+  like as postLikeAction,
+  unlike as postUnlikeAction,
+} from '../services/posts/actions'
+import { modalTypes } from '../components/Modal/constants'
+import { showModal as showModalAction } from '../services/modal/actions'
+
+const LIMIT = 20
 
 const BlogPage = ({
   isAuthenticated,
@@ -16,31 +20,67 @@ const BlogPage = ({
   match,
   posts,
   showModal,
+  postsTotal,
+  currentUserName,
+  like,
+  unlike,
 }) => {
+  const [page, setPage] = useState(1)
+
   useEffect(() => {
     if (isAuthenticated) {
-      getPosts()
+      getPosts({ limit: LIMIT, page })
     } else {
       getPostsByAuthor(match.params.author)
     }
-  }, [isAuthenticated, getPosts, getPostsByAuthor, match])
+  }, [isAuthenticated, getPosts, getPostsByAuthor, match, page])
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage)
+  }
 
   const handlePostItemClick = (postId) => {
     showModal({ postId, modalType: modalTypes.POST_PREVIEW })
   }
 
-  return <Blog posts={posts} auth={isAuthenticated} onPostItemClick={handlePostItemClick} />
+  const handleLikeClick = (id) => {
+    like(id)
+  }
+
+  const handleUnlikeClick = (id) => {
+    unlike(id)
+  }
+
+  const hasMore = useMemo(() => postsTotal >= page * LIMIT, [page, postsTotal])
+
+  return (
+    <Blog
+      auth={isAuthenticated}
+      currentUserName={currentUserName}
+      posts={posts}
+      hasMore={hasMore}
+      page={page}
+      onPageChange={handlePageChange}
+      onPostItemClick={handlePostItemClick}
+      onLikeClick={handleLikeClick}
+      onUnlikeClick={handleUnlikeClick}
+    />
+  )
 }
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.auth.isAuthenticated,
-  posts: state.post.posts,
+  currentUserName: state.auth.user.user_name,
+  postsTotal: state.post.posts.meta.totalRecords,
+  posts: state.post.posts.data,
 })
 
 const mapDispatchToProps = {
   getPostsByAuthor: getPostsByAuthorAction,
   getPosts: getPostsAction,
-  showModal: showModalAction
+  showModal: showModalAction,
+  like: postLikeAction,
+  unlike: postUnlikeAction,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(BlogPage)
