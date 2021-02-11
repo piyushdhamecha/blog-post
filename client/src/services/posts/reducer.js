@@ -29,7 +29,7 @@ export default (state = initialState, { type, payload, options = {} }) => {
         ...state,
         posts: {
           ...state.posts,
-          data: [...state.posts.data, payload.data],
+          data: [...state.posts.data, payload],
         },
       }
     case GET_POSTS:

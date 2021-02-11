@@ -8,6 +8,7 @@ import {
   like as postLikeAction,
   unlike as postUnlikeAction,
 } from '../services/posts/actions'
+import { getFormattedPostsSelector, getPostsMetaTotalRecordsSelector } from '../services/posts/selectors'
 import { modalTypes } from '../components/Modal/constants'
 import { showModal as showModalAction } from '../services/modal/actions'
 
@@ -71,8 +72,8 @@ const BlogPage = ({
 const mapStateToProps = (state) => ({
   isAuthenticated: state.auth.isAuthenticated,
   currentUserName: state.auth.user.user_name,
-  postsTotal: state.post.posts.meta.totalRecords,
-  posts: state.post.posts.data,
+  postsTotal: getPostsMetaTotalRecordsSelector(state),
+  posts: getFormattedPostsSelector(state),
 })
 
 const mapDispatchToProps = {

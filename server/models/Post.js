@@ -19,6 +19,7 @@ const post = {
     default: Date.now,
   },
   likes: [{ type: Schema.Types.ObjectId, ref: 'users' }],
+  images: [{ type: String }],
 }
 
 const PostSchema = new Schema(post)

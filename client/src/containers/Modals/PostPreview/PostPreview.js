@@ -43,11 +43,13 @@ const PostPreview = ({
 
   const handleEdit = () => {
     hideModal()
+
     history.push(`/blog/post/update/${post._id}`)
   }
 
   const handleDelete = () => {
     hideModal()
+
     deletePost(post._id, history)
   }
 

@@ -1,25 +1,17 @@
-import React, { useState, useEffect } from "react"
-import { connect } from "react-redux"
+import _ from 'lodash'
+import React, { useState, useEffect } from 'react'
+import { connect } from 'react-redux'
 
-import PostForm from "../../components/Posts/PostForm"
-import Validate from "../../components/Form/Validate"
-import {
-  getPostByID as getPostByIDAction,
-  updatePost as updatePostAction,
-} from "../../services/posts/actions"
+import PostForm from '../../components/Posts/PostForm'
+import Validate from '../../components/Form/Validate'
+import { getPostByID as getPostByIDAction, updatePost as updatePostAction } from '../../services/posts/actions'
 
-const UpdatePostPage = ({
-  errors,
-  updatePost,
-  loading,
-  currentPost,
-  getPostByID,
-  match,
-  history,
-}) => {
+const UpdatePostPage = ({ errors, updatePost, loading, currentPost, getPostByID, match, history }) => {
   const [post, setPost] = useState({
-    title: "",
-    body: "",
+    title: '',
+    body: '',
+    images: null,
+    imageFiles: null,
     errors: {},
   })
 
@@ -29,10 +21,16 @@ const UpdatePostPage = ({
 
   // updating the local state of post with the received post data
   useEffect(() => {
-    setPost((newPost) => ({
+    const { REACT_APP_API_URL: API_URL } = process.env
+
+    setPost((oldPost) => ({
       title: currentPost.title,
       body: currentPost.body,
-      errors: { ...newPost.errors },
+      imageFiles: {
+        uploaded: true,
+        files: _.map(currentPost.images, (image) => `${API_URL}/${image}`),
+      },
+      errors: { ...oldPost.errors },
     }))
   }, [currentPost])
 
@@ -41,6 +39,19 @@ const UpdatePostPage = ({
   }, [errors])
 
   const handleChange = (e) => {
+    if (e.target.name === 'images') {
+      setPost({
+        ...post,
+        [e.target.name]: e.target.value,
+        imageFiles: {
+          uploaded: false,
+          files: e.target.files,
+        },
+      })
+
+      return
+    }
+
     setPost({
       ...post,
       [e.target.name]: e.target.value,
@@ -55,22 +66,26 @@ const UpdatePostPage = ({
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    const { title, body } = post
-    updatePost(currentPost._id, { title, body }, history)
+    const { title, body, imageFiles } = post
+    debugger
+    const formData = new FormData()
+    formData.append('title', title)
+    formData.append('body', body)
+
+    if (imageFiles && imageFiles.files && imageFiles.files.length && !imageFiles.uploaded) {
+      _.forEach(imageFiles.files, (image) => {
+        formData.append('images', image)
+      })
+    }
+
+    updatePost(currentPost._id, formData, history)
   }
 
   // to ensure that the post is loaded otherwise we would make uncontrolled form access error
-  const isPostLoaded = () =>
-    post.title || post.body || Object.keys(post.errors).length > 0
-
+  const isPostLoaded = () => post.title || post.body || Object.keys(post.errors).length > 0
+  console.log({ post })
   return isPostLoaded() ? (
-    <PostForm
-      loading={loading}
-      post={post}
-      onChange={handleChange}
-      onBlur={handleBlur}
-      onSubmit={handleSubmit}
-    />
+    <PostForm loading={loading} post={post} onChange={handleChange} onBlur={handleBlur} onSubmit={handleSubmit} />
   ) : (
     <div />
   )

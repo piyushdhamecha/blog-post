@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors')
 require('dotenv').config()
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
@@ -11,12 +12,14 @@ const posts = require('./routes/api/posts')
 const app = express()
 
 //middleware
+app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 // db configuration
 const MONGO_URI = process.env.MONGO_URI
 
+app.use(express.static(path.join(__dirname)))
 app.use(passport.initialize())
 require('./middleware/passport')(passport)
 app.use('/api/users/', users)

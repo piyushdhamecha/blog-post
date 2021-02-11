@@ -1,3 +1,5 @@
+@import '../../../sass/styles.scss';
+
 .footerContainer {
   padding: 0 !important;
   display: grid;
@@ -17,6 +19,10 @@
 
 .like {
   cursor: pointer;
+}
+
+.liked {
+  fill: $themeColor;
 }
 
 .comments {

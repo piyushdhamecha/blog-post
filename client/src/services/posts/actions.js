@@ -25,7 +25,11 @@ export const createPost = (postData, history) => (dispatch) => {
   dispatch(togglePostLoading())
 
   axios
-    .post('/api/posts/create', postData)
+    .post('/api/posts/create', postData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
     .then((res) => {
       dispatch({
         type: CREATE_POST,
@@ -110,7 +114,11 @@ export const updatePost = (id, postData, history) => (dispatch) => {
   dispatch(togglePostLoading())
 
   axios
-    .patch(`/api/posts/update/${id}`, postData)
+    .patch(`/api/posts/update/${id}`, postData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
     .then((res) => {
       dispatch({
         type: UPDATE_POST,

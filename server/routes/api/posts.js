@@ -3,6 +3,7 @@ const router = express.Router()
 const Post = require('../../models/Post')
 const passport = require('passport')
 const validatePostInput = require('../../validation/post')
+const upload = require('../../middleware/upload')
 
 router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
   const { limit = 20, page = 1 } = req.query
@@ -41,9 +42,10 @@ router.get('/author/:author', (req, res) => {
     .catch((err) => res.status(400).json({ author: 'Error fetching posts of specific author' }))
 })
 
-router.post('/create', passport.authenticate('jwt', { session: false }), (req, res) => {
+router.post('/create', passport.authenticate('jwt', { session: false }), upload.array('images', 10), (req, res) => {
   const author = req.user.user_name
   const post = req.body
+
   const { errors, isValid } = validatePostInput(post)
 
   if (!isValid) {
@@ -51,6 +53,10 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
   }
 
   post.author = author
+
+  if (req.files && req.files.length) {
+    post.images = req.files.map(({ path }) => path)
+  }
 
   const newPost = new Post(post)
 
@@ -60,20 +66,32 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
     .catch((err) => console.log({ create: 'Error creating new post' }))
 })
 
-router.patch('/update/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
-  const author = req.user.user_name
-  const { errors, isValid } = validatePostInput(req.body)
+router.patch(
+  '/update/:id',
+  passport.authenticate('jwt', { session: false }),
+  upload.array('images', 10),
+  (req, res) => {
+    const author = req.user.user_name
+    const { errors, isValid } = validatePostInput(req.body)
 
-  if (!isValid) {
-    return res.status(400).json(errors)
+    if (!isValid) {
+      return res.status(400).json(errors)
+    }
+    debugger
+    const post = {
+      title: req.body.title,
+      body: req.body.body,
+    }
+
+    if (req.files && req.files.length) {
+      post.images = req.files.map(({ path }) => path)
+    }
+
+    Post.findOneAndUpdate({ author, _id: req.params.id }, { $set: post }, { new: true })
+      .then((doc) => res.status(200).json(doc))
+      .catch((err) => res.status(400).json(err))
   }
-
-  const { title, body } = req.body
-
-  Post.findOneAndUpdate({ author, _id: req.params.id }, { $set: { title, body } }, { new: true })
-    .then((doc) => res.status(200).json(doc))
-    .catch((err) => res.status(400).json(err))
-})
+)
 
 router.put('/like', passport.authenticate('jwt', { session: false }), (req, res) => {
   const user = req.user
