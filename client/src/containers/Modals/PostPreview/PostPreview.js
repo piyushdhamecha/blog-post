@@ -25,13 +25,6 @@ const PostPreview = ({
   useEffect(() => {
     getPostByID(postId)
   }, [postId, getPostByID])
-  if (postLoading) {
-    return (
-      <ReactBootStrapModal.Body>
-        <Spinner />
-      </ReactBootStrapModal.Body>
-    )
-  }
 
   if (postLoading || _.isEmpty(post)) {
     return (

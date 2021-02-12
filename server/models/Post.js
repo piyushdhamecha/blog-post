@@ -18,14 +18,11 @@ const post = {
     type: Date,
     default: Date.now,
   },
-  likes: [{ type: Schema.Types.ObjectId, ref: 'users' }],
+  likes: [{ type: Schema.Types.ObjectId, ref: 'users', unique: true }],
   images: [{ type: String }],
+  comments: [{ type: Schema.Types.ObjectId, ref: 'comments', unique: true }],
 }
 
-const PostSchema = new Schema(post)
-
-PostSchema.virtual('likesCount').get(function () {
-  return this.likes && this.likes.length ? this.likes.length : 0
-})
+const PostSchema = new Schema(post, { timestamps: true })
 
 module.exports = mongoose.model('posts', PostSchema)

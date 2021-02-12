@@ -6,7 +6,8 @@ import postCss from './post.module.scss'
 import './post.scss'
 
 const Post = ({ post, currentUserName, onBodyClick, onLikeClick, onUnlikeClick }) => {
-  const { _id, liked, likesCount, title, body, date, author } = post
+  console.log(post)
+  const { _id, liked, likesCount, commentsCount, title, body, date, author } = post
 
   return (
     <Card className="deckStyle" style={{ border: 'none' }}>
@@ -21,9 +22,19 @@ const Post = ({ post, currentUserName, onBodyClick, onLikeClick, onUnlikeClick }
           className={postCss.like}
         >
           {liked ? <HandThumbsUpFill size={14} className={postCss.liked} /> : <HandThumbsUp size={14} />}
-          {likesCount ? <small className="text-muted">{`${likesCount} Likes`}</small> : null}
+          {!!likesCount && (
+            <small className="text-muted">
+              <strong>{likesCount}</strong>
+            </small>
+          )}
+          {likesCount ? <small className="text-muted">Likes</small> : null}
         </div>
         <div>
+          {!!commentsCount && (
+            <small className="text-muted">
+              <strong>{commentsCount}</strong>
+            </small>
+          )}
           <small className="text-muted">Comments</small>
         </div>
       </Card.Footer>

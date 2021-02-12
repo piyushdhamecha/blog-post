@@ -1,7 +1,10 @@
 const express = require('express')
+const mongoose = require('mongoose')
 const router = express.Router()
-const Post = require('../../models/Post')
 const passport = require('passport')
+
+const Post = require('../../models/Post')
+const Comment = require('../../models/Comment')
 const validatePostInput = require('../../validation/post')
 const upload = require('../../middleware/upload')
 
@@ -31,9 +34,10 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
 })
 
 router.get('/post/:id', (req, res) => {
-  Post.find({ _id: req.params.id })
+  Post.findOne({ _id: req.params.id })
+    .populate('comments')
     .then((post) => res.status(200).json(post))
-    .catch((err) => res.status(400).json({ id: 'Error fetching post by id' }))
+    .catch((err) => res.status(400).json(err))
 })
 
 router.get('/author/:author', (req, res) => {
@@ -77,7 +81,7 @@ router.patch(
     if (!isValid) {
       return res.status(400).json(errors)
     }
-    debugger
+
     const post = {
       title: req.body.title,
       body: req.body.body,
@@ -107,6 +111,40 @@ router.put('/unlike', passport.authenticate('jwt', { session: false }), (req, re
   Post.findOneAndUpdate({ _id: req.body.id }, { $pull: { likes: user._id } }, { new: true })
     .then((doc) => res.status(200).json(doc))
     .catch((err) => res.status(400).json(err))
+})
+
+router.put('/comment', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const author = req.user.user_name
+  debugger
+  const { postId, id, text } = req.body
+
+  const newComment = {
+    text,
+    author,
+  }
+
+  let updateComment = null
+
+  if (id) {
+    updateComment = await Comment.findOneAndUpdate({ author, _id: id }, { $set: newComment }, { new: true })
+      .then((doc) => doc)
+      .catch((err) => err)
+
+    Post.findOneAndUpdate({ _id: postId }, { new: true })
+      .then((doc) => res.status(200).json(doc))
+      .catch((err) => res.status(400).json(err))
+  } else {
+    const createdComment = new Comment(newComment)
+
+    updateComment = await createdComment
+      .save()
+      .then((doc) => doc)
+      .catch((err) => err)
+
+    Post.findOneAndUpdate({ _id: postId }, { $push: { comments: updateComment._id } }, { new: true })
+      .then((doc) => res.status(200).json(doc))
+      .catch((err) => res.status(400).json(err))
+  }
 })
 
 router.delete('/delete/:id', passport.authenticate('jwt', { session: false }), (req, res) => {

@@ -17,6 +17,7 @@ export const getFormattedPostsSelector = createSelector(
     _.map(posts, (item) => ({
       ...item,
       likesCount: item.likes ? item.likes.length : 0,
+      commentsCount: item.comments ? item.comments.length : 0,
       liked: _.some(item.likes, (id) => id === authUser.id),
     }))
 )

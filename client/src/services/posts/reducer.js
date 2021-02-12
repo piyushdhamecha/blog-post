@@ -46,7 +46,7 @@ export default (state = initialState, { type, payload, options = {} }) => {
     case GET_POST:
       return {
         ...state,
-        post: { ...payload[0] },
+        post: { ...payload },
       }
     case UPDATE_POST:
       const posts = [...state.posts.data]
