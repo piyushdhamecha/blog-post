@@ -8,6 +8,7 @@ import {
   DELETE_POST,
   TOGGLE_POSTS_LOADING,
   TOGGLE_POST_LOADING,
+  TOGGLE_COMMENT_UPDATING,
   RESET_POST,
 } from './constants'
 
@@ -19,6 +20,10 @@ export const togglePostLoading = () => ({
 
 export const togglePostsLoading = () => ({
   type: TOGGLE_POSTS_LOADING,
+})
+
+export const toggleCommentUpdating = () => ({
+  type: TOGGLE_COMMENT_UPDATING,
 })
 
 export const createPost = (postData, history) => (dispatch) => {
@@ -134,8 +139,6 @@ export const updatePost = (id, postData, history) => (dispatch) => {
 }
 
 export const like = (id) => (dispatch) => {
-  dispatch(togglePostLoading())
-
   axios
     .put(`/api/posts/like`, { id })
     .then((res) => {
@@ -143,7 +146,6 @@ export const like = (id) => (dispatch) => {
         type: UPDATE_POST,
         payload: res.data,
       })
-      dispatch(togglePostLoading())
     })
     .catch((err) => {
       dispatch(setErrors(err.response.data))
@@ -152,8 +154,6 @@ export const like = (id) => (dispatch) => {
 }
 
 export const unlike = (id) => (dispatch) => {
-  dispatch(togglePostLoading())
-
   axios
     .put(`/api/posts/unlike`, { id })
     .then((res) => {
@@ -161,11 +161,28 @@ export const unlike = (id) => (dispatch) => {
         type: UPDATE_POST,
         payload: res.data,
       })
-      dispatch(togglePostLoading())
     })
     .catch((err) => {
       dispatch(setErrors(err.response.data))
       dispatch(togglePostLoading())
+    })
+}
+
+export const updateComment = (postId, comment) => (dispatch) => {
+  dispatch(toggleCommentUpdating())
+
+  axios
+    .put(`/api/posts/comment`, { postId, text: comment })
+    .then((res) => {
+      dispatch({
+        type: UPDATE_POST,
+        payload: res.data,
+      })
+      dispatch(toggleCommentUpdating())
+    })
+    .catch((err) => {
+      dispatch(setErrors(err.response.data))
+      dispatch(toggleCommentUpdating())
     })
 }
 

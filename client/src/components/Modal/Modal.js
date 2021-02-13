@@ -9,7 +9,7 @@ const Modal = ({ show, modalType, hideModal }) => {
   const BodyComponent = modalComponents[modalType] || null
 
   return (
-    <ReactBootStrapModal show={show} onHide={hideModal} aria-labelledby="contained-modal-title-vcenter" centered>
+    <ReactBootStrapModal show={show} onHide={hideModal} centered className="fade" size="lg">
       {BodyComponent ? <BodyComponent /> : null}
     </ReactBootStrapModal>
   )

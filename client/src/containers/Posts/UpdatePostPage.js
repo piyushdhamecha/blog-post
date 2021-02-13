@@ -67,7 +67,7 @@ const UpdatePostPage = ({ errors, updatePost, loading, currentPost, getPostByID,
   const handleSubmit = (e) => {
     e.preventDefault()
     const { title, body, imageFiles } = post
-    debugger
+
     const formData = new FormData()
     formData.append('title', title)
     formData.append('body', body)
@@ -83,7 +83,7 @@ const UpdatePostPage = ({ errors, updatePost, loading, currentPost, getPostByID,
 
   // to ensure that the post is loaded otherwise we would make uncontrolled form access error
   const isPostLoaded = () => post.title || post.body || Object.keys(post.errors).length > 0
-  console.log({ post })
+
   return isPostLoaded() ? (
     <PostForm loading={loading} post={post} onChange={handleChange} onBlur={handleBlur} onSubmit={handleSubmit} />
   ) : (

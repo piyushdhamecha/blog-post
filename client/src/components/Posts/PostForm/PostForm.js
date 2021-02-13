@@ -9,7 +9,7 @@ import ImageGallery from '../../Layout/ImageGallery'
 
 const PostForm = ({ post, onChange, onBlur, loading, onSubmit }) => {
   const { title, body, images, imageFiles, errors } = post
-  console.log(imageFiles)
+
   return (
     <Container>
       <Row>

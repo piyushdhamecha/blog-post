@@ -8,6 +8,7 @@ import {
   DELETE_POST,
   TOGGLE_POSTS_LOADING,
   TOGGLE_POST_LOADING,
+  TOGGLE_COMMENT_UPDATING,
 } from './constants'
 
 const initialState = {
@@ -18,6 +19,7 @@ const initialState = {
   },
   postLoading: false,
   postsLoading: false,
+  commentUpdating: false,
 }
 
 export default (state = initialState, { type, payload, options = {} }) => {
@@ -63,7 +65,7 @@ export default (state = initialState, { type, payload, options = {} }) => {
 
       return {
         ...state,
-        post: {},
+        post: { ...payload },
         posts: {
           ...state.posts,
           data: newPostsData,
@@ -83,6 +85,11 @@ export default (state = initialState, { type, payload, options = {} }) => {
       return {
         ...state,
         postsLoading: !state.postsLoading,
+      }
+    case TOGGLE_COMMENT_UPDATING:
+      return {
+        ...state,
+        commentUpdating: !state.commentUpdating,
       }
     case RESET_POST:
       return initialState

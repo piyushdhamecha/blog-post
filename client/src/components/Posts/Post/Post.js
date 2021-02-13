@@ -6,7 +6,6 @@ import postCss from './post.module.scss'
 import './post.scss'
 
 const Post = ({ post, currentUserName, onBodyClick, onLikeClick, onUnlikeClick }) => {
-  console.log(post)
   const { _id, liked, likesCount, commentsCount, title, body, date, author } = post
 
   return (

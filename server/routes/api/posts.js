@@ -35,7 +35,7 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
 
 router.get('/post/:id', (req, res) => {
   Post.findOne({ _id: req.params.id })
-    .populate('comments')
+    .populate({ path: 'comments', options: { sort: { date: -1 } } })
     .then((post) => res.status(200).json(post))
     .catch((err) => res.status(400).json(err))
 })
@@ -92,6 +92,7 @@ router.patch(
     }
 
     Post.findOneAndUpdate({ author, _id: req.params.id }, { $set: post }, { new: true })
+      .populate({ path: 'comments', options: { sort: { date: -1 } } })
       .then((doc) => res.status(200).json(doc))
       .catch((err) => res.status(400).json(err))
   }
@@ -101,6 +102,7 @@ router.put('/like', passport.authenticate('jwt', { session: false }), (req, res)
   const user = req.user
 
   Post.findOneAndUpdate({ _id: req.body.id }, { $push: { likes: user._id } }, { new: true })
+    .populate({ path: 'comments', options: { sort: { date: -1 } } })
     .then((doc) => res.status(200).json(doc))
     .catch((err) => res.status(400).json(err))
 })
@@ -109,13 +111,13 @@ router.put('/unlike', passport.authenticate('jwt', { session: false }), (req, re
   const user = req.user
 
   Post.findOneAndUpdate({ _id: req.body.id }, { $pull: { likes: user._id } }, { new: true })
+    .populate({ path: 'comments', options: { sort: { date: -1 } } })
     .then((doc) => res.status(200).json(doc))
     .catch((err) => res.status(400).json(err))
 })
 
 router.put('/comment', passport.authenticate('jwt', { session: false }), async (req, res) => {
   const author = req.user.user_name
-  debugger
   const { postId, id, text } = req.body
 
   const newComment = {
@@ -131,6 +133,7 @@ router.put('/comment', passport.authenticate('jwt', { session: false }), async (
       .catch((err) => err)
 
     Post.findOneAndUpdate({ _id: postId }, { new: true })
+      .populate({ path: 'comments', options: { sort: { date: -1 } } })
       .then((doc) => res.status(200).json(doc))
       .catch((err) => res.status(400).json(err))
   } else {
@@ -142,13 +145,26 @@ router.put('/comment', passport.authenticate('jwt', { session: false }), async (
       .catch((err) => err)
 
     Post.findOneAndUpdate({ _id: postId }, { $push: { comments: updateComment._id } }, { new: true })
+      .populate({ path: 'comments', options: { sort: { date: -1 } } })
       .then((doc) => res.status(200).json(doc))
       .catch((err) => res.status(400).json(err))
   }
 })
 
-router.delete('/delete/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
+router.delete('/delete/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
   const author = req.user.user_name
+
+  const post = await Post.findOne({ author, _id: req.params.id })
+  debugger
+  if (post._id) {
+    const comments = post.comments
+
+    if (comments && comments.length) {
+      comments.map(async ({ _id }) => {
+        await Comment.deleteOne({ _id })
+      })
+    }
+  }
 
   Post.findOneAndDelete({ author, _id: req.params.id })
     .then((doc) => res.status(200).json(doc))

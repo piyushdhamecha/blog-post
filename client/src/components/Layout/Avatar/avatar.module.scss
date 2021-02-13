@@ -1,0 +1,12 @@
+@import '../../../sass/styles.scss';
+
+.container {
+  height: 50px;
+  width: 50px;
+  background-color: $themeColor;
+  color: $light;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}

@@ -7,13 +7,21 @@ import { withRouter } from 'react-router-dom'
 
 import ViewPost from '../../../components/Posts/ViewPost'
 import Spinner from '../../../components/Layout/Spinner'
-import { deletePost as deletePostAction, getPostByID as getPostByIDAction } from '../../../services/posts/actions'
+import {
+  deletePost as deletePostAction,
+  getPostByID as getPostByIDAction,
+  updateComment as updateCommentAction,
+  like as postLikeAction,
+  unlike as postUnlikeAction,
+} from '../../../services/posts/actions'
+import { getFormattedPostSelector } from '../../../services/posts/selectors'
 
 import { hideModal as hideModalAction } from '../../../services/modal/actions'
 
 const PostPreview = ({
   auth,
   authUsername,
+  commentUpdating,
   post,
   postId,
   history,
@@ -21,6 +29,9 @@ const PostPreview = ({
   deletePost,
   hideModal,
   postLoading,
+  updateComment,
+  like,
+  unlike,
 }) => {
   useEffect(() => {
     getPostByID(postId)
@@ -46,10 +57,30 @@ const PostPreview = ({
     deletePost(post._id, history)
   }
 
+  const handleComment = (comment) => {
+    updateComment(post._id, comment)
+  }
+
+  const handleLikeClick = (id) => {
+    like(id)
+  }
+
+  const handleUnlikeClick = (id) => {
+    unlike(id)
+  }
+
   return (
-    <ReactBootStrapModal.Body>
-      <ViewPost post={post} auth={auth} authUsername={authUsername} onDelete={handleDelete} onEdit={handleEdit} />
-    </ReactBootStrapModal.Body>
+    <ViewPost
+      auth={auth}
+      authUsername={authUsername}
+      commentUpdating={commentUpdating}
+      post={post}
+      onDelete={handleDelete}
+      onEdit={handleEdit}
+      onSubmitComment={handleComment}
+      onLikeClick={handleLikeClick}
+      onUnlikeClick={handleUnlikeClick}
+    />
   )
 }
 
@@ -57,14 +88,18 @@ const mapStateToProps = (state) => ({
   postId: state.modal.postId,
   auth: state.auth.isAuthenticated,
   authUsername: state.auth.user.user_name,
-  post: state.post.post,
+  post: getFormattedPostSelector(state),
   postLoading: state.post.postLoading,
+  commentUpdating: state.post.commentUpdating,
 })
 
 const mapDispatchToProps = {
   hideModal: hideModalAction,
   getPostByID: getPostByIDAction,
   deletePost: deletePostAction,
+  updateComment: updateCommentAction,
+  like: postLikeAction,
+  unlike: postUnlikeAction,
 }
 
 const enhance = compose(withRouter, connect(mapStateToProps, mapDispatchToProps))
