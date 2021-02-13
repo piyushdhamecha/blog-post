@@ -74,7 +74,10 @@ export default (state = initialState, { type, payload, options = {} }) => {
     case DELETE_POST:
       return {
         ...state,
-        posts: state.posts.data.filter((post) => post._id !== payload),
+        posts: {
+          meta: state.posts.meta - 1,
+          data: state.posts.data.filter((post) => post._id !== payload),
+        },
       }
     case TOGGLE_POST_LOADING:
       return {

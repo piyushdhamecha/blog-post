@@ -155,7 +155,7 @@ router.delete('/delete/:id', passport.authenticate('jwt', { session: false }), a
   const author = req.user.user_name
 
   const post = await Post.findOne({ author, _id: req.params.id })
-  debugger
+
   if (post._id) {
     const comments = post.comments
 

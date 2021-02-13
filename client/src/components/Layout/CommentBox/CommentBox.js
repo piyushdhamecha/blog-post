@@ -6,15 +6,20 @@ const CommentBox = ({ loading, onSubmit }) => {
   const [formData, setFormData] = useState({})
 
   const handleSubmit = (event) => {
+    event.stopPropagation()
+    event.preventDefault()
+
     const form = event.currentTarget
 
     if (form.checkValidity() === true) {
       onSubmit(formData.comment)
+      form.reset()
+      setValidated(false)
+
+      return
     }
 
     setValidated(true)
-    event.stopPropagation()
-    event.preventDefault()
   }
 
   const handleChange = (e) => {

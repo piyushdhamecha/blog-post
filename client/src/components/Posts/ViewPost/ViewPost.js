@@ -70,25 +70,23 @@ const ViewPost = ({
               <Calendar3 /> - {moment(date).calendar()}
             </Col>
           </Row>
-          {comments && comments.length && (
-            <>
-              <Row>
-                <Col>
-                  <hr className="my-3" />
-                  <h5>Comments</h5>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <CommentBox onSubmit={onSubmitComment} loading={commentUpdating} />
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <ViewComments comments={comments} />
-                </Col>
-              </Row>
-            </>
+          <Row>
+            <Col>
+              <hr className="my-3" />
+              <h5>Comments</h5>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <CommentBox onSubmit={onSubmitComment} loading={commentUpdating} />
+            </Col>
+          </Row>
+          {!!(comments && comments.length) && (
+            <Row>
+              <Col>
+                <ViewComments comments={comments} />
+              </Col>
+            </Row>
           )}
         </Container>
       </Modal.Body>
